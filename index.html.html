@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CyberQuiz — aprender jogando</title>
+<meta name="description" content="O CyberQuiz é um sistema de perguntas e respostas para aprender e se divertir com quizes organizados por categorias.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#070a2e;--bg2:#0e1250;--ink:#f6f7ff;--muted:#c3c9ff;
+  --y:#ffd23f;--g:#2dff7a;--m:#ff3df0;--c:#27d8ff;
+  --disp:"Orbitron","Trebuchet MS",system-ui,sans-serif;
+  --body:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background-color:var(--bg);color:var(--ink);font:400 18px/1.65 var(--body);
+  background-image:
+    radial-gradient(ellipse at 15% 0%,rgba(255,61,240,.22),transparent 55%),
+    radial-gradient(ellipse at 90% 30%,rgba(39,216,255,.18),transparent 50%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 2px,transparent 2px 46px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 92px);
+  background-attachment:fixed}
+a{color:var(--c)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--y);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--y);color:#111;padding:8px 14px;border-radius:8px;z-index:30}
+.skip:focus{left:8px}
+.wrap{width:min(1080px,100% - 40px);margin-inline:auto}
+header.top{position:sticky;top:0;z-index:20;background:rgba(7,10,46,.88);backdrop-filter:blur(8px);padding-top:env(safe-area-inset-top,0px)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}
+.logo{font:900 20px var(--disp);letter-spacing:.04em;color:var(--ink);text-decoration:none;text-shadow:0 0 12px var(--m),0 0 2px var(--m)}
+.logo b{color:var(--c);text-shadow:0 0 12px var(--c)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav a{color:var(--ink);text-decoration:none;font-weight:500;font-size:15px;padding:8px 12px;border-radius:999px}
+nav a:hover{background:rgba(255,255,255,.1)}
+.btn{display:inline-flex;align-items:center;gap:10px;font:700 16px var(--body);color:#04130a;background:var(--g);padding:14px 26px;border-radius:999px;text-decoration:none;box-shadow:0 0 22px rgba(45,255,122,.55);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.alt{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--c),0 0 18px rgba(39,216,255,.4)}
+
+
+/* hero */
+.hero{padding:clamp(56px,9vw,120px) 0 clamp(48px,7vw,90px)}
+.eyebrow{font:700 14px var(--disp);letter-spacing:.14em;text-transform:uppercase;color:var(--y);margin:0 0 20px}
+h1{font:900 clamp(44px,9.5vw,112px)/.95 var(--disp);letter-spacing:-.02em;margin:0 0 28px;text-shadow:0 0 28px rgba(255,61,240,.8),0 0 4px rgba(255,255,255,.6)}
+h1 span{color:var(--c);text-shadow:0 0 28px rgba(39,216,255,.9)}
+.lead{font-size:clamp(20px,2.4vw,26px);line-height:1.5;max-width:44ch;margin:0 0 32px}
+.meta{margin:0 0 28px;padding:0;list-style:none;color:var(--muted);font-size:15px}.meta strong{display:block;color:var(--ink);font-weight:500;font-size:16px}
+.tags{display:flex;flex-wrap:wrap;gap:10px;padding:0;margin:0 0 36px;list-style:none}
+.tags li{font:700 14px var(--body);padding:6px 16px;border-radius:999px;border:2px solid currentColor}
+.tags li:nth-child(1){color:var(--y)}.tags li:nth-child(2){color:var(--g)}.tags li:nth-child(3){color:var(--m)}
+.cta{display:flex;flex-wrap:wrap;gap:14px}
+section{padding:clamp(52px,7vw,100px) 0}
+h2{font:900 clamp(26px,4vw,42px)/1.1 var(--disp);margin:0 0 24px;letter-spacing:-.01em}
+h3{font:700 20px/1.3 var(--body);margin:0 0 8px}
+.prose{max-width:66ch}.prose p{margin:0 0 20px}
+.pull{margin:32px 0;padding:24px 28px;border-left:5px solid var(--m);background:rgba(255,61,240,.1);font:500 clamp(20px,2.6vw,26px)/1.4 var(--body);border-radius:0 16px 16px 0}
+.panel{background:rgba(14,18,80,.75);border-radius:24px;padding:clamp(20px,4vw,40px);box-shadow:0 0 0 3px var(--c),0 0 36px rgba(39,216,255,.4)}
+.panel.pk{box-shadow:0 0 0 3px var(--m),0 0 36px rgba(255,61,240,.45)}
+.panel.gr{box-shadow:0 0 0 3px var(--g),0 0 36px rgba(45,255,122,.4)}
+.sr{position:absolute;left:-999px}
+.keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:24px 0}
+.key{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;border:3px solid;background:rgba(7,10,46,.75);font:500 17px var(--body);color:var(--ink);text-align:left;cursor:pointer;transition:transform .12s,background .12s}
+button.key:hover:not(:disabled){transform:translateY(-3px)}
+.key:disabled{cursor:default}
+.key i{font:900 28px/1 var(--disp);font-style:normal}
+.k1{border-color:var(--y);color:var(--y);box-shadow:0 0 18px rgba(255,210,63,.45)}.k2{border-color:var(--c);color:var(--c);box-shadow:0 0 18px rgba(39,216,255,.45)}
+.k3{border-color:var(--g);color:var(--g);box-shadow:0 0 18px rgba(45,255,122,.45)}.k4{border-color:var(--m);color:var(--m);box-shadow:0 0 18px rgba(255,61,240,.45)}
+.key span{color:var(--ink)}
+.key.ok{background:rgba(45,255,122,.28);outline:4px solid var(--g)}.key.no{opacity:.45}.key.bad{background:rgba(255,80,80,.25);opacity:1;outline:4px solid #ff6b6b}
+.qn{font:700 14px var(--disp);color:var(--y);letter-spacing:.1em;margin:0 0 10px}
+#qt{font:900 clamp(22px,3.4vw,32px)/1.25 var(--disp);margin:0}
+#qf{min-height:1.6em;font-weight:500;margin:0 0 14px}
+.tabs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 20px}
+.tabs button{font:700 15px var(--body);color:var(--ink);background:transparent;border:2px solid var(--c);padding:10px 20px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--c);color:#02121a;box-shadow:0 0 18px rgba(39,216,255,.6)}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.items li{display:flex;gap:14px;align-items:baseline;padding:12px 16px;border-radius:12px;background:rgba(7,10,46,.6)}
+.items b{font:700 13px var(--disp);color:var(--y);min-width:52px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{padding:22px;border-radius:18px;background:rgba(14,18,80,.75);border-top:4px solid var(--g)}.card:nth-child(2){border-color:var(--m)}
+.card p{margin:0;color:var(--muted)}
+.chk{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}
+.chk button{font:700 16px var(--body);color:var(--ink);background:rgba(7,10,46,.7);border:3px dashed var(--muted);border-radius:14px;padding:12px 20px;cursor:pointer}
+.chk button[aria-pressed=true]{border:3px solid var(--g);color:var(--g);background:rgba(45,255,122,.15);box-shadow:0 0 16px rgba(45,255,122,.5)}
+.chk button[aria-pressed=true]::before{content:"✓ "}
+.er{width:100%;height:auto;display:block;margin:0 0 20px;overflow:visible}
+.er g.n{cursor:pointer}.er g.n rect{fill:rgba(7,10,46,.92);stroke:currentColor;stroke-width:3}
+.er g.n:hover rect,.er g.n:focus-visible rect,.er g.n.on rect{stroke-width:6;filter:drop-shadow(0 0 8px currentColor)}
+.er g.n:focus-visible{outline:none}
+.er text{fill:var(--ink);font:500 14px var(--body);text-anchor:middle;dominant-baseline:middle}
+.er .cd{font-size:12px;fill:var(--y);paint-order:stroke;stroke:var(--bg2);stroke-width:5px}
+.er polygon{fill:rgba(14,18,80,.95);stroke:var(--muted);stroke-width:2}.er line{stroke:var(--muted);stroke-width:2}.er .v{font-size:11px;fill:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:8px 0 16px}.chips li{padding:4px 14px;border-radius:999px;border:2px solid var(--y);font-size:15px}
+#det p{margin:0 0 8px}
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;padding:0;margin:0;list-style:none}
+.team li{padding:22px 20px;border-radius:18px;background:rgba(14,18,80,.75);font-weight:500;font-size:19px;border-bottom:4px solid var(--c)}
+.team li:nth-child(4n+2){border-color:var(--g)}.team li:nth-child(4n+3){border-color:var(--m)}.team li:nth-child(4n){border-color:var(--y)}
+ul.obs{max-width:66ch;padding-left:22px}ul.obs li{margin-bottom:10px}
+footer{padding:48px 0 72px}
+footer p{margin:0;font:900 clamp(40px,12vw,150px)/.9 var(--disp);letter-spacing:-.02em;color:transparent;-webkit-text-stroke:2px var(--c);text-shadow:0 0 30px rgba(39,216,255,.5)}
+footer small{display:block;margin-top:20px;color:var(--muted);font-size:15px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn,.key{transition:none}}
+@media (max-width:640px){body{font-size:17px}nav a{padding:8px 9px;font-size:14px}.er text{font-size:17px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Ir para o conteúdo</a>
+<header class="top"><div class="wrap">
+  <a class="logo" href="#topo">CYBER<b>QUIZ</b></a>
+  <nav aria-label="Seções do artigo"><a href="#jogar">Jogue</a><a href="#contexto">Contexto</a><a href="#requisitos">Requisitos</a><a href="#modelo">Modelo</a><a href="#equipe">Equipe</a></nav>
+</div></header>
+<main id="conteudo">
+<div class="hero" id="topo"><div class="wrap">
+  <p class="eyebrow">Mostra de Tecnologia · Documentação do banco de dados</p>
+  <h1>Cyber<span>Quiz</span></h1>
+  <p class="lead">Um sistema de perguntas e respostas que une aprendizado e entretenimento na área de tecnologia, em quizes organizados por categorias.</p>
+  <ul class="meta"><li>Autoria<strong>Andrey Henrique, Felipe Gustavo Rodrigues, Murilo Morata, João Henrique Nunes, Nayra Costa e Matheus Lopes</strong></li></ul>
+  <ul class="tags" aria-label="Tecnologias utilizadas"><li>Figma</li><li>GitHub</li><li>IA</li></ul>
+  <div class="cta"><a class="btn" href="#jogar">Jogar um round</a><a class="btn alt" href="https://www.figma.com/design/PydYAmxFWmd6wMlFFUROdI/Sem-t%C3%ADtulo?node-id=0-1&amp;t=QEM5xHTFWGH5A9F6-1" target="_blank" rel="noopener noreferrer">Ver protótipo no Figma</a></div>
+</div></div>
+
+<section id="jogar"><div class="wrap">
+  <h2>Jogue um round</h2>
+  <div class="prose"><p>Antes da teoria, a prática. Esta é uma demonstração de três perguntas no estilo do CyberQuiz: cada alternativa tem sua cor e sua forma. Clique para responder.</p></div>
+  <div class="panel pk" id="quiz"></div>
+</div></section>
+
+<section id="contexto"><div class="wrap">
+  <h2>Contexto do projeto</h2>
+  <div class="prose">
+    <p>O CyberQuiz é um sistema de perguntas e respostas criado para proporcionar aprendizado e entretenimento por meio de quizes organizados por categorias.</p>
+    <p>O banco de dados armazena e organiza perguntas, categorias, fontes, publicadores, idiomas e alternativas de respostas, permitindo que os jogadores escolham um tema e respondam às perguntas disponíveis.</p>
+    <div class="pull">Aprender • Jogar • Conhecer</div>
+  </div>
+  <h3>O que o banco faz e o que não faz</h3>
+  <div class="panel" style="margin-top:12px"><div class="tabs" role="tablist" id="t-esc" aria-label="Escopo do sistema"></div><ul class="items" id="l-esc"></ul></div>
+  <h3 style="margin-top:44px">Quem usa o sistema</h3>
+  <div class="two" style="margin-top:12px">
+    <div class="card"><h3>Jogador</h3><p>Realiza cadastro e login, escolhe uma categoria ou tema e responde às perguntas disponíveis.</p></div>
+    <div class="card"><h3>Responsável pelo cadastro</h3><p>Cadastra perguntas, categorias, fontes, publicadores, idiomas e alternativas de respostas.</p></div>
+  </div>
+</div></section>
+
+<section id="minimundo"><div class="wrap">
+  <h2>Minimundo</h2>
+  <div class="prose">
+    <p>O sistema deve permitir cadastrar perguntas e suas informações: categoria, fonte utilizada, publicador e idioma. Para cada pergunta, são cadastradas alternativas de respostas, associadas a ela e identificadas de forma clara.</p>
+    <p>Inicialmente, cada pergunta poderá ter duas alternativas. Mas o banco é estruturado de maneira flexível para aceitar três ou mais no futuro, sem mudar a estrutura principal.</p>
+    <p><strong>Monte uma pergunta válida:</strong> toda pergunta precisa de cinco coisas. Clique em cada uma para marcá-la.</p>
+  </div>
+  <div class="chk" id="chk"></div>
+  <p id="chks" aria-live="polite" style="font-weight:500;min-height:1.6em"></p>
+</div></section>
+
+<section id="requisitos"><div class="wrap">
+  <h2>Requisitos e regras</h2>
+  <div class="prose"><p>O projeto parte de 11 requisitos funcionais (RD) e 7 regras de negócio (RA). Alterne entre as duas listas.</p></div>
+  <div class="panel gr"><div class="tabs" role="tablist" id="t-req" aria-label="Requisitos e regras"></div><ul class="items" id="l-req"></ul></div>
+</div></section>
+
+<section id="modelo"><div class="wrap">
+  <h2>Modelo conceitual e DER</h2>
+  <div class="prose"><p>O Diagrama Entidade-Relacionamento segue a notação de Chen: retângulos são entidades, losangos são relacionamentos e as cardinalidades indicam o mínimo e o máximo de participações. Clique em uma entidade para ver seus atributos e relacionamentos.</p></div>
+  <div class="panel">
+    <svg class="er" id="er" viewBox="0 0 700 470" role="group" aria-label="Diagrama entidade-relacionamento do CyberQuiz"></svg>
+    <div id="det" aria-live="polite"></div>
+  </div>
+  <h3 style="margin-top:44px">Observações importantes</h3>
+  <ul class="obs">
+    <li>O modelo conceitual não apresenta tabelas, chaves estrangeiras ou tipos de coluna. Esses elementos serão definidos nos modelos lógico e físico.</li>
+    <li>Cada pergunta possui uma ou mais alternativas, sem limite de apenas duas.</li>
+    <li>Novas alternativas podem ser adicionadas sem modificar o modelo principal.</li>
+    <li>As informações obrigatórias respeitam as regras de integridade do banco.</li>
+  </ul>
+  <div class="pull">Objetivo: uma estrutura de banco de dados organizada, flexível e pronta para perguntas de diferentes categorias, idiomas e quantidades de alternativas.</div>
+</div></section>
+
+<section id="equipe"><div class="wrap">
+  <h2>Equipe</h2>
+  <ul class="team"><li>Andrey Henrique</li><li>Felipe Gustavo Rodrigues</li><li>Murilo Morata</li><li>João Henrique Nunes</li><li>Nayra Costa</li><li>Matheus Lopes</li></ul>
+</div></section>
+
+<section id="prototipo"><div class="wrap"><div class="panel pk">
+  <h2>Veja o protótipo</h2>
+  <div class="prose"><p>Todas as telas estão no Figma, em modo de visualização.</p></div>
+  <a class="btn" href="https://www.figma.com/design/PydYAmxFWmd6wMlFFUROdI/Sem-t%C3%ADtulo?node-id=0-1&amp;t=QEM5xHTFWGH5A9F6-1" target="_blank" rel="noopener noreferrer">Abrir no Figma</a>
+</div></div></section>
+</main>
+<footer><div class="wrap"><p aria-hidden="true">CYBERQUIZ</p><small>Aprender • Jogar • Conhecer · Figma, GitHub, IA</small></div></footer>
+
+<script>
+const $=id=>document.getElementById(id);
+function tabs(tid,lid,G){const T=$(tid),L=$(lid),ks=Object.keys(G);
+  function sel(k){[...T.children].forEach(b=>b.setAttribute('aria-selected',b.dataset.k===k));
+    L.innerHTML=G[k].map(x=>Array.isArray(x)?'<li><b>'+x[0]+'</b><span>'+x[1]+'</span></li>':'<li><span>'+x+'</span></li>').join('')}
+  ks.forEach(k=>{const b=document.createElement('button');b.type='button';b.role='tab';b.dataset.k=k;b.textContent=k;b.onclick=()=>sel(k);T.appendChild(b)});sel(ks[0])}
+tabs('t-esc','l-esc',{'O banco faz':['Armazena perguntas e suas informações.','Armazena categorias, fontes e publicadores.','Armazena o idioma das perguntas.','Armazena as alternativas de cada pergunta.','Organiza as perguntas por tema/categoria.'],
+ 'O banco não faz':['Não permite conversas entre usuários.','Não funciona como uma rede social.','Não realiza pesquisas na internet em tempo real.','Não é responsável por produzir o conteúdo.','Não gerencia pagamentos ou compras.']});
+tabs('t-req','l-req',{'Requisitos funcionais':[['RD01','Cadastrar perguntas.'],['RD02','Associar cada pergunta a uma categoria.'],['RD03','Cadastrar a fonte utilizada em cada pergunta.'],['RD04','Cadastrar o publicador da informação.'],['RD05','Associar cada pergunta a um idioma.'],['RD06','Cadastrar alternativas de respostas para cada pergunta.'],['RD07','Permitir mais de duas alternativas por pergunta.'],['RD08','Permitir ao jogador escolher uma categoria ou tema para iniciar o quiz.'],['RD09','Permitir ao jogador responder às perguntas cadastradas.'],['RD10','Permitir cadastro e login dos jogadores.'],['RD11','Organizar as informações das perguntas para uso no quiz.']],
+ 'Regras de negócio':[['RA01','Toda pergunta deve pertencer a uma categoria.'],['RA02','Toda pergunta deve possuir uma fonte associada.'],['RA03','Toda pergunta deve possuir um publicador associado.'],['RA04','Toda pergunta deve estar associada a um idioma.'],['RA05','Cada alternativa deve estar associada a uma pergunta.'],['RA06','Quantidade variável de alternativas, sem limitação estrutural a apenas duas.'],['RA07','O banco garante a integridade das informações, impedindo registros obrigatórios nulos ou duplicações não permitidas.']]});
+
+/* quiz */
+const Q=[{t:'O que significa a sigla IA?',o:['Internet Avançada','Inteligência Artificial','Interface Automática','Informação Aplicada'],c:1},
+{t:'O que é Machine Learning?',o:['Um tipo de hardware','Uma rede social','Uma linguagem de programação','Técnica em que sistemas aprendem padrões a partir de dados'],c:3},
+{t:'Qual destes é um exemplo de IA no cotidiano?',o:['Assistente virtual','Calculadora de mesa','Lâmpada comum','Régua'],c:0}];
+const SH=['★','●','▲','■'],KC=['k1','k2','k3','k4'];let qi=0,sc=0;
+function round(){const q=$('quiz');
+  if(qi>=Q.length){q.innerHTML='<p class="qn">FIM DE JOGO</p><h3 id="qt">Parabéns! Você acertou '+sc+' de '+Q.length+'.</h3><p>'+(sc===Q.length?'Especialista em tecnologia!':'Jogue de novo para melhorar.')+'</p><button class="btn" id="rs" type="button">Jogar de novo</button>';
+    $('rs').onclick=()=>{qi=0;sc=0;round()};return}
+  const d=Q[qi];q.innerHTML='<p class="qn">PERGUNTA '+(qi+1)+' / '+Q.length+'</p><h3 id="qt"></h3><div class="keys" id="qa"></div><p id="qf" aria-live="polite"></p><button class="btn" id="qx" type="button" hidden>Próxima</button>';
+  $('qt').textContent=d.t;
+  d.o.forEach((o,i)=>{const b=document.createElement('button');b.type='button';b.className='key '+KC[i];b.innerHTML='<i aria-hidden="true">'+SH[i]+'</i><span></span>';b.lastChild.textContent=o;
+    b.onclick=()=>{const bs=[...$('qa').children];bs.forEach((x,j)=>{x.disabled=true;if(j===d.c)x.classList.add('ok');else if(j===i)x.classList.add('bad');else x.classList.add('no')});
+      if(i===d.c){sc++;$('qf').textContent='Correto!'}else $('qf').textContent='Quase! A resposta certa é: '+d.o[d.c];
+      $('qx').hidden=false;$('qx').textContent=qi===Q.length-1?'Ver resultado':'Próxima';$('qx').onclick=()=>{qi++;round()};$('qx').focus()};
+    $('qa').appendChild(b)})}
+round();
+
+/* checklist */
+const C=['Categoria','Fonte','Publicador','Idioma','Alternativa(s)'];
+C.forEach(n=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-pressed','false');
+  b.onclick=()=>{b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');const k=document.querySelectorAll('#chk [aria-pressed=true]').length;
+    $('chks').textContent=k===5?'Pergunta válida: pronta para entrar no quiz!':'Faltam '+(5-k)+' item(ns) obrigatório(s).'};$('chk').appendChild(b)});
+$('chks').textContent='Faltam 5 item(ns) obrigatório(s).';
+
+/* DER */
+const NS='http://www.w3.org/2000/svg',P={Pergunta:[350,190,'--c'],Categoria:[100,60,'--y'],Fonte:[600,60,'--g'],Publicador:[100,320,'--m'],Idioma:[600,320,'--y'],Alternativa:[350,420,'--g']};
+const A={Pergunta:['id_pergunta (PK)','texto_pergunta'],Categoria:['id_categoria (PK)','nome'],Fonte:['id_fonte (PK)','nome'],Publicador:['id_publicador (PK)','nome'],Idioma:['id_idioma (PK)','nome'],Alternativa:['id_alternativa (PK)','texto_alternativa','correta']};
+const R=[['Categoria','classifica','0,N','1,1','Uma Categoria pode classificar nenhuma ou várias Perguntas; cada Pergunta pertence a exatamente uma Categoria.'],
+['Fonte','referencia','0,N','1,1','Uma Fonte pode ser usada por nenhuma ou várias Perguntas; cada Pergunta possui exatamente uma Fonte.'],
+['Publicador','publica','0,N','1,1','Um Publicador pode estar associado a nenhuma ou várias Perguntas; cada Pergunta possui exatamente um Publicador.'],
+['Idioma','identifica','0,N','1,1','Um Idioma pode estar associado a nenhuma ou várias Perguntas; cada Pergunta tem exatamente um Idioma.'],
+['Alternativa','possui','1,1','1,N','Cada Pergunta possui uma ou várias Alternativas; cada Alternativa pertence a exatamente uma Pergunta.']];
+const svg=$('er');const mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+const pp=P.Pergunta;
+R.forEach(r=>{const e=P[r[0]],mx=(e[0]+pp[0])/2,my=(e[1]+pp[1])/2;
+  mk('line',{x1:e[0],y1:e[1],x2:pp[0],y2:pp[1]});
+  mk('polygon',{points:`${mx-46},${my} ${mx},${my-24} ${mx+46},${my} ${mx},${my+24}`});
+  mk('text',{x:mx,y:my,class:'v'}).textContent=r[1];
+  [[.26,r[2]],[.68,r[3]]].forEach(c=>{const x=e[0]+(pp[0]-e[0])*c[0]+(e[0]===pp[0]?18:0),y=e[1]+(pp[1]-e[1])*c[0];mk('text',{x,y,class:'cd'}).textContent=c[1]})});
+const nodes={};
+function show(n){Object.values(nodes).forEach(g=>g.classList.remove('on'));nodes[n].classList.add('on');
+  const rs=n==='Pergunta'?R:R.filter(r=>r[0]===n);
+  $('det').innerHTML='<h3></h3><p>Atributos</p><ul class="chips">'+A[n].map(a=>'<li>'+a+'</li>').join('')+'</ul>'+rs.map(r=>'<p></p>').join('');
+  $('det').firstChild.textContent=n.toUpperCase();[...$('det').querySelectorAll('p')].slice(1).forEach((p,i)=>p.textContent=rs[i][4])}
+Object.keys(P).forEach(n=>{const p=P[n],g=mk('g',{class:'n',tabindex:0,role:'button','aria-label':'Entidade '+n,transform:`translate(${p[0]},${p[1]})`,style:'color:var('+p[2]+')'});
+  mk('rect',{x:-68,y:-24,width:136,height:48,rx:6},g);mk('text',{x:0,y:1},g).textContent=n;nodes[n]=g;
+  g.onclick=()=>show(n);g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(n)}}});
+show('Pergunta');
+</script>
+</body>
+</html>
